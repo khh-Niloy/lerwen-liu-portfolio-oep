@@ -1,0 +1,90 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+
+CLAUDE.md
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node_modules (if any npm packages are added later)
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache (if parcel is used later)
+.cache
+.parcel-cache
+
+# Next.js build output (if Next.js is used later)
+.next
+
+# Nuxt.js build output (if Nuxt.js is used later)
+.nuxt
+
+# Gatsby files (if Gatsby is used later)
+.cache/
+public
+
+# Storybook build outputs (if Storybook is used later)
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Build outputs (if build tools are added later)
+dist/
+build/
