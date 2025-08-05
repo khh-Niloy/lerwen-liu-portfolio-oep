@@ -1,0 +1,23 @@
+{
+  "name": "lerwenliu-oep",
+  "version": "1.0.0",
+  "main": "test-form.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khh-Niloy/lerwen-liu-portfolio-oep.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/khh-Niloy/lerwen-liu-portfolio-oep/issues"
+  },
+  "homepage": "https://github.com/khh-Niloy/lerwen-liu-portfolio-oep#readme",
+  "description": "",
+  "dependencies": {
+    "playwright": "^1.54.2"
+  }
+}
