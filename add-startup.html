@@ -375,7 +375,6 @@
             startupData['OEP Batch'] = formData.get('oepBatch');
             
             console.log('Submitting startup data:', startupData);
-            
             // Submit to Google Apps Script
             submitStartupData(startupData)
                 .then(response => {
