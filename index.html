@@ -136,6 +136,11 @@
         </div>
         
         <div class="navbar-end">
+            <div id="login-section" class="mr-4 flex">
+                <button onclick="showTopNavLogin()" class="btn btn-sm bg-green-500 text-white border-none">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </div>
             <div id="logout-section" class="hidden mr-4 flex">
                 <button onclick="logout()" class="btn btn-sm btn-outline btn-error">
                     <i class="fas fa-sign-out-alt"></i> Logout
@@ -361,9 +366,6 @@
                             <div id="truncated-desc-${index}" class="bg-gray-50 rounded-lg p-4 text-sm text-gray-600 leading-relaxed">
                                 ${jobDescription.length > 120 ? jobDescription.substring(0, 120) + '...' : jobDescription}
                             </div>
-                            <button onclick="handleDetailsButton(${index})" class="btn btn-sm bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 mt-4" id="details-btn-${index}">
-                                ${isLoggedIn ? 'See full details...' : 'Login to view details'}
-                            </button>
                         </div>
                     </div>
                 `;
@@ -373,57 +375,44 @@
         }
 
         function updateButtonsAfterLogin() {
-            // Update all existing buttons to show "See full details" after login
-            const buttons = document.querySelectorAll('[id^="details-btn-"]');
-            buttons.forEach(button => {
-                button.textContent = 'See full details...';
-            });
-            
-            // Show logout button
+            // Hide login button and show logout button
+            const loginSection = document.getElementById('login-section');
             const logoutSection = document.getElementById('logout-section');
+            if (loginSection) {
+                loginSection.classList.add('hidden');
+            }
             if (logoutSection) {
                 logoutSection.classList.remove('hidden');
             }
+            
+            // Auto-populate privileged info for all companies
+            autoPopulatePrivilegedInfo();
         }
 
         function logout() {
             isLoggedIn = false;
             
-            // Update all buttons back to "Login to view details"
-            const buttons = document.querySelectorAll('[id^="details-btn-"]');
-            buttons.forEach(button => {
-                button.textContent = 'Login to view details';
-            });
-            
-            // Hide logout button
+            // Show login button and hide logout button
+            const loginSection = document.getElementById('login-section');
             const logoutSection = document.getElementById('logout-section');
+            if (loginSection) {
+                loginSection.classList.remove('hidden');
+            }
             if (logoutSection) {
                 logoutSection.classList.add('hidden');
             }
+            
+            // Hide privileged info
+            hidePrivilegedInfo();
             
             showToast('Successfully logged out', 'success');
         }
 
         let companyData = [];
 
-        function handleDetailsButton(index) {
-            if (!companyData[index]) return;
-            
-            if (isLoggedIn) {
-                showActualDetails(index);
-            } else {
-                showLoginModal(index);
-            }
-        }
-
         function showFullCardDetails(index) {
             if (!companyData[index]) return;
-            
-            if (isLoggedIn) {
-                showActualDetails(index);
-            } else {
-                showLoginModal(index);
-            }
+            showActualDetails(index);
         }
 
         function showLoginModal(index) {
@@ -483,13 +472,97 @@
                 isLoggedIn = true;
                 closeLoginModal();
                 updateButtonsAfterLogin();
-                showActualDetails(index);
+                if (index !== undefined) {
+                    showActualDetails(index);
+                }
                 showToast('Successfully logged in!', 'success');
             } else {
                 showToast('Invalid password', 'error');
                 document.getElementById('loginInput').value = '';
                 document.getElementById('loginInput').focus();
             }
+        }
+        
+        function showTopNavLogin() {
+            const loginModal = document.createElement('div');
+            loginModal.id = 'loginModal';
+            loginModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm p-5';
+            
+            const loginContent = document.createElement('div');
+            loginContent.className = 'bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all';
+            
+            loginContent.innerHTML = `
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-lock text-green-600 text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Login</h2>
+                    <p class="text-gray-600 mb-6">Enter your password to access privileged information</p>
+                    
+                    <div class="mb-4">
+                        <input type="password" 
+                               id="loginInput" 
+                               placeholder="Enter password"
+                               class="input input-bordered w-full bg-gray-50 border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                               onkeypress="if(event.key === 'Enter') performLogin()">
+                    </div>
+                    
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="performLogin()" class="btn bg-green-600 hover:bg-green-700 text-white border-0">
+                            Login
+                        </button>
+                        <button onclick="closeLoginModal()" class="btn btn-ghost">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            loginModal.appendChild(loginContent);
+            document.body.appendChild(loginModal);
+            
+            document.getElementById('loginInput').focus();
+            
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === loginModal) {
+                    closeLoginModal();
+                }
+            });
+        }
+        
+        function autoPopulatePrivilegedInfo() {
+            // Show privileged information in all cards
+            companyData.forEach((company, index) => {
+                const card = document.querySelector(`#api-startup-list .card:nth-child(${index + 1})`);
+                if (card) {
+                    // Check if privileged info is already shown
+                    if (!card.querySelector('.privileged-info')) {
+                        const privilegedDiv = document.createElement('div');
+                        privilegedDiv.className = 'privileged-info mt-4 p-4 bg-green-50 rounded-lg border border-green-200';
+                        privilegedDiv.innerHTML = `
+                            <div class="space-y-2 text-sm">
+                                <div><strong>Contact:</strong> ${company['Contact Person'] || 'Not specified'}</div>
+                                <div><strong>Phone:</strong> ${company['Contact Number'] || company['Company Contact number'] || 'Not provided'}</div>
+                                <div><strong>Email:</strong> ${company['Email'] ? `<a href="mailto:${company['Email']}" class="text-blue-600">${company['Email']}</a>` : 'Not provided'}</div>
+                                <div><strong>Website:</strong> ${company['Website'] ? `<a href="${company['Website']}" target="_blank" class="text-blue-600">${company['Website']}</a>` : 'Not provided'}</div>
+                            </div>
+                            <button onclick="showActualDetails(${index})" class="btn btn-sm bg-green-600 hover:bg-green-700 text-white border-0 mt-3 w-full">
+                                <i class="fas fa-eye"></i> View Complete Details
+                            </button>
+                        `;
+                        
+                        card.querySelector('.card-body').appendChild(privilegedDiv);
+                    }
+                }
+            });
+        }
+        
+        function hidePrivilegedInfo() {
+            // Remove privileged information from all cards
+            const privilegedElements = document.querySelectorAll('.privileged-info');
+            privilegedElements.forEach(element => {
+                element.remove();
+            });
         }
 
         function checkPassword(index) {
